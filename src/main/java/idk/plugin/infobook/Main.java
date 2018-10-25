@@ -1,5 +1,6 @@
 package idk.plugin.infobook;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBookWritten;
 import cn.nukkit.plugin.PluginBase;
@@ -20,18 +21,22 @@ public class Main extends PluginBase implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         saveDefaultConfig();
-        bookName = getConfig().getString("bookName", "").replace("ง", "\u00A7");
-        bookAuthor = getConfig().getString("bookAuthor", "").replace("ง", "\u00A7");
+        bookName = getConfig().getString("bookName", "").replace("ยง", "\u00A7");
+        bookAuthor = getConfig().getString("bookAuthor", "").replace("ยง", "\u00A7");
         getConfig().getStringList("Lines").forEach((s) -> {
-            text.add(s.replace("ง", "\u00A7"));
+            text.add(s.replace("ยง", "\u00A7"));
         });
-        if(text == null) text = Arrays.asList("Defaulttext...");
+        if (text == null) text = Arrays.asList("");
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        for (Item i : p.getInventory().getContents().values()) {
+            if (i.getId() == 387 && i.getDamage() == 0) return;
+        }
         ItemBookWritten book = (ItemBookWritten) Item.get(387, 0, 1);
         book.writeBook(bookAuthor, bookName, (text.size() <= 50 ? text.toArray(new String[text.size()]) : Arrays.copyOfRange(text.toArray(new String[text.size()]), 0, 50)));
-        if (!e.getPlayer().getInventory().contains(book)) e.getPlayer().getInventory().addItem(book);
+        p.getInventory().addItem(book);
     }
 }
