@@ -1,14 +1,16 @@
 package idk.plugin.infobook;
 
-import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBookWritten;
+import cn.nukkit.item.ItemIds;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Main extends PluginBase implements Listener {
@@ -26,17 +28,17 @@ public class Main extends PluginBase implements Listener {
         getConfig().getStringList("Lines").forEach((s) -> {
             text.add(s.replace("§", "\u00A7"));
         });
-        if (text == null) text = Arrays.asList("");
+        if (text == null) text = Collections.singletonList("");
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         for (Item i : p.getInventory().getContents().values()) {
-            if (i.getId() == 387 && i.getDamage() == 0) return;
+            if (i.getId() == ItemIds.WRITTEN_BOOK && i.getDamage() == 0) return;
         }
         ItemBookWritten book = (ItemBookWritten) Item.get(387, 0, 1);
-        book.writeBook(bookAuthor, bookName, (text.size() <= 50 ? text.toArray(new String[text.size()]) : Arrays.copyOfRange(text.toArray(new String[text.size()]), 0, 50)));
+        book.writeBook(bookAuthor, bookName, (text.size() <= 50 ? text.toArray(new String[0]) : Arrays.copyOfRange(text.toArray(new String[0]), 0, 50)));
         p.getInventory().addItem(book);
     }
 }
